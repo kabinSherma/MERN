@@ -1,9 +1,19 @@
+// importing express
+
 const express = require('express')
+const connectToDatabase = require('./database/connection')
 const app = express()
 
 
+
+
+connectToDatabase()
+
+
 app.get('/',(request,response)=>{
-    response.send('Hello World')
+    response.status(200). json({
+        message:"sccuess"
+    })
 })
 
 
@@ -23,6 +33,6 @@ app.get('/',(request,response)=>{
 
 
 
-app.listen(4000,()=>{
-    console.log('Server started as  port 4000 ')
+app.listen(3000,()=>{
+    console.log('Server started as  port 3000 ')
 })

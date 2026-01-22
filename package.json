@@ -7,10 +7,11 @@
   "type": "commonjs",
   "main": "index.js",
   "scripts": {
-    "start":"nodemon app.js"
+    "start": "nodemon app.js"
   },
   "dependencies": {
     "express": "^5.2.1",
+    "mongoose": "^9.1.5",
     "nodemon": "^3.1.11"
   }
 }
