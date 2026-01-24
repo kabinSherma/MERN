@@ -68,13 +68,54 @@ app.get('/book/:id',async(req,res)=>{
 
     const id = req.params.id
     const book = await Book.findById (id)  // return in object
+  if (!book ){
+   res.status(404).json({
+    message:"Book not found"
+   })
+  }
+  else{
     res.status(200).json({
-        message:"Single Book Fetch Successfully",
-        data:book
+        message:"Single book fetched successfully",
+        data: book
+    })
+    
+  }
+
+})
+
+
+// delete api
+
+app.delete('/book/:id',async(req,res)=>{
+
+    const id = req.params.id
+     await Book.findByIdAndDelete(id)
+    res.status(200).json({
+        message:"Deleted successfully"
     })
 
 })
 
+
+// update or edit API
+
+app.patch('/book/:id',async(req,res)=>{
+
+    const id = req.params.id
+    const {bookName,bookPrice,isbnNumber,autherName,publishedAt,publication}=req.body
+   await Book.findByIdAndUpdate(id,{
+        bookName,
+        bookPrice,
+        isbnNumber,
+        publishedAt,
+        publication,
+        autherName
+    })
+    res.status(200).json({
+        message:"Updated Successfully",
+        
+    })
+})
 
 
 
