@@ -9,6 +9,12 @@ const app = express()
 
 app.use(express.json())
 
+// importing multer 
+
+const {multer,storage} = require('./middleware/multerConfig')
+
+const uploads =multer({storage:storage})
+
 
 connectToDatabase()
 
@@ -22,7 +28,7 @@ app.get('/',(request,response)=>{
 
 // creating create api
 
-app.post('/book',async(req,res)=>{
+app.post('/book',uploads.single("image"),async(req,res)=>{
 
     // destructuring data form forntend 
     const {bookName,bookPrice,isbnNumber,autherName,publishedAt,publication}=req.body
