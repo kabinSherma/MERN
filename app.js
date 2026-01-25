@@ -9,11 +9,13 @@ const app = express()
 
 app.use(express.json())
 
-// importing multer 
+// importing multer and storage 
 
 const {multer,storage} = require('./middleware/multerConfig')
 
 const uploads =multer({storage:storage})
+
+
 
 
 connectToDatabase()
@@ -28,10 +30,19 @@ app.get('/',(request,response)=>{
 
 // creating create api
 
-app.post('/book',uploads.single("image "),async(req,res)=>{
+app.post('/book',uploads.single("image"),async(req,res)=>{
+    // console.log(req.file)
+    let filename ;
+    
+    if(!req.file){
+        filename = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT-k83MyoiH43lpI6Y-TY17A2JCPudD_7Av9A&s"
+    }
+    else {
+        filename= "http://localhost:3000/" + req.file.filename
+    }
 
-    // destructuring data form forntend 
-    const {bookName,bookPrice,isbnNumber,autherName,publishedAt,publication}=req.body
+        // destructuring data form forntend 
+    const {bookName,bookPrice,isbnNumber,autherName,publishedAt,publication,}=req.body
     // console.log(bookName,bookPrice,isbnNumber,autherName,publishedDate)
 
     // putting the data into the structrure 
@@ -42,7 +53,8 @@ app.post('/book',uploads.single("image "),async(req,res)=>{
         isbnNumber:isbnNumber,
         autherName:autherName,
         publishedAt:publishedAt,
-        publication:publication
+        publication:publication,
+        imageUrl : filename
     })
 
     // message after book is created successfully
@@ -92,7 +104,7 @@ app.get('/book/:id',async(req,res)=>{
 
 // delete api
 
-app.delete('/book/:id',async(req,res)=>{
+app.delete('/book/:id',uploads.single("image"),async(req,res)=>{
 
     const id = req.params.id
      await Book.findByIdAndDelete(id)
@@ -105,7 +117,7 @@ app.delete('/book/:id',async(req,res)=>{
 
 // update or edit API
 
-app.patch('/book/:id',async(req,res)=>{
+app.patch('/book/:id',uploads.single("image"),async(req,res)=>{
 
     const id = req.params.id
     const {bookName,bookPrice,isbnNumber,autherName,publishedAt,publication}=req.body
@@ -132,9 +144,8 @@ app.patch('/book/:id',async(req,res)=>{
 
 
 
-
-
-
+// give the premission to read the file 
+app.use(express.static("./storage/"))
 
 
 app.listen(3000,()=>{
