@@ -4,6 +4,7 @@ const express = require('express')
 const connectToDatabase = require('./database/connection')
 const Book = require('./model/bookModel')
 const app = express()
+const fs =require('fs')
 
 // to understand the json in express
 
@@ -13,8 +14,7 @@ app.use(express.json())
 
 const {multer,storage} = require('./middleware/multerConfig')
 
-const uploads =multer({storage:storage})
-
+const uploads =multer({storage:storage});
 
 
 
@@ -38,7 +38,7 @@ app.post('/book',uploads.single("image"),async(req,res)=>{
         filename = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT-k83MyoiH43lpI6Y-TY17A2JCPudD_7Av9A&s"
     }
     else {
-        filename= "http://localhost:3000/" + req.file.filename
+        filename="http://localhost:3000/" + req.file.filename
     }
 
         // destructuring data form forntend 
@@ -104,9 +104,29 @@ app.get('/book/:id',async(req,res)=>{
 
 // delete api
 
-app.delete('/book/:id',uploads.single("image"),async(req,res)=>{
+app.delete('/book/:id',async(req,res)=>{
+
 
     const id = req.params.id
+    const oldDatas= await Book.findById(id)
+
+    if(oldDatas){
+        const oldImagePath = oldDatas.imageUrl
+        const oldImageUrl = "http://localhost:3000/".length
+        const newOldImage = oldImagePath.slice(oldImageUrl)
+        console.log(newOldImage)
+        fs.unlink('./storage/'+ newOldImage,(err)=>{
+            if(err){
+                console.log(err)
+            }
+            else {
+                console.log("Image Deleted")
+            }
+        })
+    }
+
+
+
      await Book.findByIdAndDelete(id)
     res.status(200).json({
         message:"Deleted successfully"
@@ -121,20 +141,46 @@ app.patch('/book/:id',uploads.single("image"),async(req,res)=>{
 
     const id = req.params.id
     const {bookName,bookPrice,isbnNumber,autherName,publishedAt,publication}=req.body
+    // updateing image 
+
+    const oldDatas= await Book.findById(id)
+    let filename;
+    if(req.file){
+        const oldImagePath = oldDatas.imageUrl
+        
+        const lengthOfOldImagePath = "http://localhost:3000/".length
+        
+        const newOldImagePath = oldImagePath.slice(lengthOfOldImagePath)
+        
+
+        fs.unlink('./storage/'+ newOldImagePath,(err) =>{
+            if(err){
+                console.log(err)
+            }
+            else {
+                console.log("File deleted successfully")
+            }
+        })
+        filename= "http://locallhost:3000/" + req.file.filename
+    }
+    else {
+
+    }
+
    await Book.findByIdAndUpdate(id,{
         bookName,
         bookPrice,
         isbnNumber,
         publishedAt,
         publication,
-        autherName
+        autherName,
+        imageUrl:filename
     })
     res.status(200).json({
         message:"Updated Successfully",
         
     })
-})
-
+});
 
 
 
