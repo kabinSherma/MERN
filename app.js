@@ -6,6 +6,16 @@ const Book = require('./model/bookModel')
 const app = express()
 const fs =require('fs')
 
+// require cors
+
+const cors = require('cors')
+
+// 
+
+app.use(cors({
+    origin:"*"
+}))
+
 // to understand the json in express
 
 app.use(express.json())
@@ -190,7 +200,7 @@ app.patch('/book/:id',uploads.single("image"),async(req,res)=>{
 
 
 
-// give the premission to read the file 
+// give access to read the file 
 app.use(express.static("./storage/"))
 
 
