@@ -8,7 +8,8 @@ const mongoose=require ('mongoose')
 const bookSchema = new mongoose.Schema ({
     bookName:{
         type:String,
-        unique:true // only one book of the name 
+        // // only one book of the name 
+        unique: true,
     },
     bookPrice : {
         type:Number

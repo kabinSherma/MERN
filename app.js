@@ -18,11 +18,13 @@ app.use(cors({
 
 // to understand the json in express
 
-app.use(express.json())
+// app.use(express.json())
+app.use(express.urlencoded({ extended: true }));
 
 // importing multer and storage 
 
 const {multer,storage} = require('./middleware/multerConfig')
+const { log } = require('console')
 
 const uploads =multer({storage:storage});
 
@@ -53,7 +55,7 @@ app.post('/book',uploads.single("image"),async(req,res)=>{
 
         // destructuring data form forntend 
     const {bookName,bookPrice,isbnNumber,autherName,publishedAt,publication,}=req.body
-    // console.log(bookName,bookPrice,isbnNumber,autherName,publishedDate)
+    // console.log(bookName,bookPrice,isbnNumber,autherName,publishedAt,publication)
 
     // putting the data into the structrure 
 
@@ -66,7 +68,7 @@ app.post('/book',uploads.single("image"),async(req,res)=>{
         publication:publication,
         imageUrl : filename
     })
-
+console.log(req.files)
     // message after book is created successfully
 
     res.status(201).json({
